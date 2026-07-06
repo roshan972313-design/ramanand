@@ -625,6 +625,7 @@
     if(users.some(u => u.email === email)){
       showMsg('signupMsg', 'This email is already registered. Please login.', 'error');
       return false;
+      window.location.href = 'login.html'
     }
 
     users.push({ name, email, phone, password, createdAt: new Date().toISOString() });
@@ -746,7 +747,7 @@
   `;
   
   document.head.appendChild(styleSheet);
-  window.location.href = 'login.html'
+  
 </script>
 
 </body>
