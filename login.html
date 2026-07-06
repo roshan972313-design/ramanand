@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ramanand Restaurant | Login</title>
+<link rel="stylesheet" href="login.html">
+<style>
+  :root{
+    --orange: #ff7a1a;
+    --orange-dark: #e85d04;
+    --orange-light: #ffb37a;
+    --white: #ffffff;
+    --cream: #fff6ee;
+  }
+
+  *{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI', Arial, sans-serif;
+  }
+
+  html,body{
+    height:100%;
+    overflow:hidden;
+    background:linear-gradient(135deg,#fff3e6,#ffdfc0,#ffffff);
+  }
+
+  /* ---------- 3D SCENE BACKGROUND ---------- */
+  .scene{
+    position:fixed;
+    inset:0;
+    perspective:1400px;
+    overflow:hidden;
+    z-index:0;
+  }
+
+  .floaters{
+    position:absolute;
+    inset:0;
+    transform-style:preserve-3d;
+    animation:sceneRotate 30s linear infinite;
+  }
+
+  @keyframes sceneRotate{
+    from{ transform:rotateY(0deg); }
+    to{ transform:rotateY(360deg); }
+  }
+
+  .blob{
+    position:absolute;
+    border-radius:50%;
+    background:radial-gradient(circle at 30% 30%, var(--orange-light), var(--orange) 70%);
+    opacity:0.55;
+    filter:blur(1px);
+    box-shadow:0 20px 60px rgba(230,90,4,0.35);
+    animation:floatY 8s ease-in-out infinite;
+  }
+  .blob:nth-child(1){ width:180px;height:180px; top:8%; left:10%; animation-delay:0s; transform:translateZ(60px);}
+  .blob:nth-child(2){ width:110px;height:110px; top:65%; left:6%; animation-delay:1.2s; transform:translateZ(120px);}
+  .blob:nth-child(3){ width:140px;height:140px; top:15%; right:8%; animation-delay:0.6s; transform:translateZ(90px);}
+  .blob:nth-child(4){ width:90px;height:90px; bottom:12%; right:12%; animation-delay:2s; transform:translateZ(150px);}
+  .blob:nth-child(5){ width:60px;height:60px; top:45%; left:48%; animation-delay:1.6s; transform:translateZ(200px); opacity:0.35;}
+  .blob:nth-child(6){ width:200px;height:200px; bottom:-60px; left:35%; animation-delay:0.9s; transform:translateZ(40px); opacity:0.3;}
+
+  @keyframes floatY{
+    0%,100%{ transform:translateY(0) translateZ(var(--z,60px)) rotate(0deg); }
+    50%{ transform:translateY(-35px) translateZ(var(--z,60px)) rotate(15deg); }
+  }
+
+  /* subtle plate/fork decorative rings */
+  .ring{
+    position:absolute;
+    border:6px solid rgba(255,255,255,0.6);
+    border-radius:50%;
+    box-shadow:inset 0 0 20px rgba(230,90,4,0.25), 0 10px 30px rgba(230,90,4,0.15);
+    animation:spinRing 12s linear infinite;
+  }
+  .ring1{ width:260px;height:260px; top:-80px; right:-80px; }
+  .ring2{ width:180px;height:180px; bottom:-60px; left:-60px; animation-direction:reverse; }
+  @keyframes spinRing{
+    from{transform:rotate(0deg);}
+    to{transform:rotate(360deg);}
+  }
+
+  /* ---------- MAIN CARD ---------- */
+  .stage{
+    position:relative;
+    z-index:2;
+    width:100%;
+    height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    perspective:1600px;
+  }
+
+  .card{
+    position:relative;
+    width:400px;
+    max-width:90vw;
+    background:linear-gradient(160deg, var(--white) 0%, var(--cream) 100%);
+    border-radius:26px;
+    padding:45px 38px 34px;
+    box-shadow:
+      0 40px 80px -20px rgba(230,90,4,0.45),
+      0 15px 35px -10px rgba(230,90,4,0.3),
+      inset 0 1px 0 rgba(255,255,255,0.8);
+    transform-style:preserve-3d;
+    transform:rotateX(6deg) rotateY(-4deg);
+    animation:cardIntro 1s cubic-bezier(.2,.9,.3,1.2) both, cardFloat 6s ease-in-out infinite 1s;
+    border:2px solid rgba(255,122,26,0.25);
+  }
+
+  @keyframes cardIntro{
+    from{
+      opacity:0;
+      transform:translateY(80px) rotateX(30deg) rotateY(-15deg) scale(0.85);
+    }
+    to{
+      opacity:1;
+      transform:rotateX(6deg) rotateY(-4deg) scale(1);
+    }
+  }
+
+  @keyframes cardFloat{
+    0%,100%{ transform:rotateX(6deg) rotateY(-4deg) translateY(0px); }
+    50%{ transform:rotateX(3deg) rotateY(2deg) translateY(-10px); }
+  }
+
+  .card:hover{
+    transition:transform 0.3s ease;
+  }
+
+  /* Logo badge */
+  .logo-badge{
+    width:92px;
+    height:92px;
+    margin:0 auto 14px;
+    border-radius:50%;
+    background:linear-gradient(145deg, var(--orange), var(--orange-dark));
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:
+      0 15px 30px rgba(230,90,4,0.5),
+      inset 0 -6px 12px rgba(0,0,0,0.15),
+      inset 0 6px 12px rgba(255,255,255,0.35);
+    transform:translateZ(50px);
+    animation:badgeSpin 5s ease-in-out infinite;
+    position:relative;
+  }
+  @keyframes badgeSpin{
+    0%,100%{ transform:translateZ(50px) rotateY(0deg); }
+    50%{ transform:translateZ(50px) rotateY(180deg); }
+  }
+  .logo-badge span{
+    font-size:38px;
+    backface-visibility:hidden;
+  }
+  .logo-badge::after{
+    content:'🍴';
+    position:absolute;
+    font-size:38px;
+    transform:rotateY(180deg);
+    backface-visibility:hidden;
+  }
+
+  h1.brand{
+    text-align:center;
+    color:var(--orange-dark);
+    font-size:26px;
+    font-weight:800;
+    letter-spacing:1px;
+    margin-bottom:2px;
+    text-shadow:0 2px 0 rgba(255,255,255,0.8);
+  }
+  p.tagline{
+    text-align:center;
+    color:#b5651d;
+    font-size:12.5px;
+    margin-bottom:26px;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    font-weight:600;
+    opacity:0.8;
+  }
+
+  /* Tabs (Login / Sign Up) */
+  .tabs{
+    display:flex;
+    background:#ffe8d3;
+    border-radius:14px;
+    padding:5px;
+    margin-bottom:24px;
+    position:relative;
+    box-shadow:inset 0 2px 6px rgba(230,90,4,0.15);
+  }
+  .tab-btn{
+    flex:1;
+    border:none;
+    background:transparent;
+    padding:10px 0;
+    font-weight:700;
+    font-size:14px;
+    color:var(--orange-dark);
+    border-radius:10px;
+    cursor:pointer;
+    position:relative;
+    z-index:2;
+    transition:color 0.3s ease;
+  }
+  .tab-btn.active{ color:#fff; }
+  .tab-slider{
+    position:absolute;
+    top:5px;
+    left:5px;
+    width:calc(50% - 5px);
+    height:calc(100% - 10px);
+    background:linear-gradient(135deg, var(--orange), var(--orange-dark));
+    border-radius:10px;
+    box-shadow:0 6px 15px rgba(230,90,4,0.5);
+    transition:transform 0.35s cubic-bezier(.5,1.8,.5,1);
+    z-index:1;
+  }
+  .tab-slider.right{ transform:translateX(100%); }
+
+  /* Form */
+  form{ display:none; flex-direction:column; gap:16px; }
+  form.active{ display:flex; animation:fadeSlide 0.5s ease; }
+  @keyframes fadeSlide{
+    from{ opacity:0; transform:translateX(15px); }
+    to{ opacity:1; transform:translateX(0); }
+  }
+
+  .field{
+    position:relative;
+    transform-style:preserve-3d;
+  }
+  .field input{
+    width:100%;
+    padding:14px 16px 14px 46px;
+    border:2px solid #ffd8b0;
+    border-radius:14px;
+    background:#fffaf5;
+    font-size:14.5px;
+    color:#7a3d00;
+    outline:none;
+    transition:all 0.3s ease;
+    box-shadow:inset 0 2px 5px rgba(230,90,4,0.08);
+  }
+  .field input::placeholder{ color:#d99a5f; }
+  .field input:focus{
+    border-color:var(--orange);
+    background:#fff;
+    box-shadow:
+      0 0 0 4px rgba(255,122,26,0.18),
+      inset 0 2px 5px rgba(230,90,4,0.08);
+    transform:translateZ(15px) translateY(-2px);
+  }
+  .field .icon{
+    position:absolute;
+    left:15px;
+    top:50%;
+    transform:translateY(-50%);
+    font-size:17px;
+    opacity:0.75;
+    pointer-events:none;
+  }
+  .field .toggle-eye{
+    position:absolute;
+    right:15px;
+    top:50%;
+    transform:translateY(-50%);
+    cursor:pointer;
+    font-size:16px;
+    opacity:0.6;
+    user-select:none;
+  }
+
+  .row-between{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-size:12.5px;
+    color:#a15c1e;
+    margin-top:-4px;
+  }
+  .row-between label{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    cursor:pointer;
+  }
+  .row-between a{
+    color:var(--orange-dark);
+    text-decoration:none;
+    font-weight:600;
+    cursor:pointer;
+  }
+  .row-between a:hover{ text-decoration:underline; }
+
+  .btn-submit{
+    margin-top:6px;
+    padding:14px;
+    border:none;
+    border-radius:14px;
+    background:linear-gradient(135deg, var(--orange) 0%, var(--orange-dark) 100%);
+    color:#fff;
+    font-weight:800;
+    font-size:15px;
+    letter-spacing:0.5px;
+    cursor:pointer;
+    box-shadow:
+      0 12px 25px rgba(230,90,4,0.45),
+      inset 0 -4px 8px rgba(0,0,0,0.15),
+      inset 0 4px 8px rgba(255,255,255,0.25);
+    transform:translateZ(20px);
+    transition:transform 0.2s ease, box-shadow 0.2s ease;
+    position:relative;
+    overflow:hidden;
+  }
+  .btn-submit:hover{
+    transform:translateZ(25px) translateY(-3px);
+    box-shadow:
+      0 18px 35px rgba(230,90,4,0.55),
+      inset 0 -4px 8px rgba(0,0,0,0.15),
+      inset 0 4px 8px rgba(255,255,255,0.3);
+  }
+  .btn-submit:active{
+    transform:translateZ(10px) translateY(0px) scale(0.97);
+  }
+  .btn-submit .shine{
+    position:absolute;
+    top:0; left:-75%;
+    width:50%; height:100%;
+    background:linear-gradient(120deg, transparent, rgba(255,255,255,0.5), transparent);
+    transform:skewX(-20deg);
+    animation:shineMove 3s ease-in-out infinite;
+  }
+  @keyframes shineMove{
+    0%{ left:-75%; }
+    50%{ left:125%; }
+    100%{ left:125%; }
+  }
+
+  .divider{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    color:#c98a4b;
+    font-size:12px;
+    margin:6px 0;
+  }
+  .divider::before, .divider::after{
+    content:'';
+    flex:1;
+    height:1px;
+    background:#ffd8b0;
+  }
+
+  .msg{
+    text-align:center;
+    font-size:13px;
+    font-weight:600;
+    min-height:18px;
+    margin-top:2px;
+    transition:opacity 0.3s ease;
+  }
+  .msg.success{ color:#1f9d55; }
+  .msg.error{ color:#e03131; }
+
+  .remember-list{
+    text-align:center;
+    font-size:11.5px;
+    color:#c98a4b;
+    margin-top:10px;
+  }
+
+  /* Floating food icons around card */
+  .food-emoji{
+    position:absolute;
+    font-size:26px;
+    opacity:0.85;
+    filter:drop-shadow(0 8px 10px rgba(230,90,4,0.35));
+    animation:foodFloat 6s ease-in-out infinite;
+    z-index:1;
+  }
+  @keyframes foodFloat{
+    0%,100%{ transform:translateY(0) rotate(-8deg); }
+    50%{ transform:translateY(-25px) rotate(8deg); }
+  }
+
+  ::-webkit-scrollbar{ width:0; }
+
+  /* ---------- Welcome / Redirect Overlay ---------- */
+  .redirect-overlay{
+    position:fixed;
+    inset:0;
+    background:linear-gradient(135deg, var(--orange), var(--orange-dark));
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    z-index:999;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity 0.5s ease;
+  }
+  .redirect-overlay.show{
+    opacity:1;
+    pointer-events:all;
+  }
+  .redirect-plate{
+    width:80px;
+    height:80px;
+    border-radius:50%;
+    border:6px solid rgba(255,255,255,0.35);
+    border-top-color:#fff;
+    animation:spinPlate 0.9s linear infinite;
+    margin-bottom:22px;
+    box-shadow:0 15px 35px rgba(0,0,0,0.25);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:28px;
+  }
+  @keyframes spinPlate{
+    to{ transform:rotate(360deg); }
+  }
+  .redirect-text{
+    color:#fff;
+    font-size:20px;
+    font-weight:800;
+    text-align:center;
+    padding:0 20px;
+    text-shadow:0 2px 10px rgba(0,0,0,0.25);
+    letter-spacing:0.5px;
+  }
+  .redirect-sub{
+    color:rgba(255,255,255,0.9);
+    font-size:12.5px;
+    margin-top:10px;
+    letter-spacing:1.5px;
+  }
+
+  @media (max-width:480px){
+    .card{ padding:34px 24px 26px; }
+    h1.brand{ font-size:22px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="scene">
+  <div class="floaters">
+    <div class="blob"></div>
+    <div class="blob"></div>
+    <div class="blob"></div>
+    <div class="blob"></div>
+    <div class="blob"></div>
+    <div class="blob"></div>
+  </div>
+  <div class="ring ring1"></div>
+  <div class="ring ring2"></div>
+</div>
+
+<span class="food-emoji" style="top:12%; left:20%; animation-delay:0s;">🍕</span>
+<span class="food-emoji" style="top:75%; left:15%; animation-delay:1.4s;">🍔</span>
+<span class="food-emoji" style="top:18%; right:18%; animation-delay:0.8s;">🍟</span>
+<span class="food-emoji" style="bottom:14%; right:16%; animation-delay:2.1s;">🥤</span>
+<span class="food-emoji" style="top:50%; right:6%; animation-delay:1.7s; font-size:22px;">🍅</span>
+
+<div class="redirect-overlay" id="redirectOverlay">
+  <div class="redirect-plate">🍽️</div>
+  <div class="redirect-text" id="redirectText">Welcome!</div>
+  <div class="redirect-sub">TAKING YOU TO RAMANAND...</div>
+</div>
+
+<div class="stage">
+  <div class="card" id="card">
+
+    <div class="logo-badge"><span>🍽️</span></div>
+    <h1 class="brand">RAMANAND</h1>
+    <p class="tagline">Restaurant &amp; Dine</p>
+
+    <div class="tabs">
+      <button type="button" class="tab-btn active" id="tabLoginBtn" onclick="switchTab('login')">Login</button>
+      <button type="button" class="tab-btn" id="tabSignupBtn" onclick="switchTab('signup')">Sign Up</button>
+      <div class="tab-slider" id="tabSlider"></div>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <form id="loginForm" class="active" onsubmit="return handleLogin(event)">
+      <div class="field">
+        <span class="icon">📧</span>
+        <input type="text" id="loginEmail" placeholder="Email or Username" required autocomplete="username">
+      </div>
+      <div class="field">
+        <span class="icon">🔒</span>
+        <input type="password" id="loginPassword" placeholder="Password" required autocomplete="current-password">
+        <span class="toggle-eye" onclick="togglePassword('loginPassword', this)">👁️</span>
+      </div>
+      <div class="row-between">
+        <label><input type="checkbox" id="rememberMe"> Remember me</label>
+        <a onclick="forgotPassword()">Forgot password?</a>
+      </div>
+      <button type="submit" class="btn-submit"><span class="shine"></span>Login to Ramanand</button>
+      <div class="msg" id="loginMsg"></div>
+    </form>
+
+    <!-- SIGNUP FORM -->
+    <form id="signupForm" onsubmit="return handleSignup(event)">
+      <div class="field">
+        <span class="icon">🙍</span>
+        <input type="text" id="signupName" placeholder="Full Name" required autocomplete="name">
+      </div>
+      <div class="field">
+        <span class="icon">📧</span>
+        <input type="email" id="signupEmail" placeholder="Email Address" required autocomplete="email">
+      </div>
+      <div class="field">
+        <span class="icon">📱</span>
+        <input type="tel" id="signupPhone" placeholder="Phone Number" pattern="[0-9]{10}" title="Enter 10 digit phone number" required>
+      </div>
+      <div class="field">
+        <span class="icon">🔒</span>
+        <input type="password" id="signupPassword" placeholder="Create Password" minlength="6" required autocomplete="new-password">
+        <span class="toggle-eye" onclick="togglePassword('signupPassword', this)">👁️</span>
+      </div>
+      <button type="submit" class="btn-submit"><span class="shine"></span>Create Account</button>
+      <div class="msg" id="signupMsg"></div>
+    </form>
+
+    <div class="remember-list" id="savedInfo"></div>
+  </div>
+</div>
+
+<script>
+  /* ---------------- 3D Tilt Effect on Mouse Move ---------------- */
+  const card = document.getElementById('card');
+  const stage = document.querySelector('.stage');
+
+  stage.addEventListener('mousemove', (e) => {
+    const rect = stage.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const cx = rect.width / 2;
+    const cy = rect.height / 2;
+    const rotateY = ((x - cx) / cx) * 10;
+    const rotateX = -((y - cy) / cy) * 10;
+    card.style.transform = `rotateX(${6 + rotateX}deg) rotateY(${-4 + rotateY}deg)`;
+    card.style.animation = 'none';
+  });
+
+  stage.addEventListener('mouseleave', () => {
+    card.style.animation = 'cardFloat 6s ease-in-out infinite';
+    card.style.transform = 'rotateX(6deg) rotateY(-4deg)';
+  });
+
+  /* ---------------- Tab Switching ---------------- */
+  function switchTab(tab){
+    const loginBtn = document.getElementById('tabLoginBtn');
+    const signupBtn = document.getElementById('tabSignupBtn');
+    const slider = document.getElementById('tabSlider');
+    const loginForm = document.getElementById('loginForm');
+    const signupForm = document.getElementById('signupForm');
+
+    if(tab === 'login'){
+      loginBtn.classList.add('active');
+      signupBtn.classList.remove('active');
+      slider.classList.remove('right');
+      loginForm.classList.add('active');
+      signupForm.classList.remove('active');
+    } else {
+      signupBtn.classList.add('active');
+      loginBtn.classList.remove('active');
+      slider.classList.add('right');
+      signupForm.classList.add('active');
+      loginForm.classList.remove('active');
+    }
+  }
+
+  /* ---------------- Password Show/Hide ---------------- */
+  function togglePassword(id, el){
+    const input = document.getElementById(id);
+    if(input.type === 'password'){
+      input.type = 'text';
+      el.textContent = '🙈';
+    } else {
+      input.type = 'password';
+      el.textContent = '👁️';
+    }
+  }
+
+  /* ---------------- LocalStorage "Database" Helpers ---------------- */
+  const DB_KEY = 'ramanand_users_db';
+
+  function getUsers(){
+    const raw = localStorage.getItem(DB_KEY);
+    return raw ? JSON.parse(raw) : [];
+  }
+
+  function saveUsers(users){
+    localStorage.setItem(DB_KEY, JSON.stringify(users));
+  }
+
+  function showMsg(elId, text, type){
+    const el = document.getElementById(elId);
+    el.textContent = text;
+    el.className = 'msg ' + type;
+  }
+
+  /* ---------------- Sign Up Handler ---------------- */
+  function handleSignup(e){
+    e.preventDefault();
+    const name = document.getElementById('signupName').value.trim();
+    const email = document.getElementById('signupEmail').value.trim().toLowerCase();
+    const phone = document.getElementById('signupPhone').value.trim();
+    const password = document.getElementById('signupPassword').value;
+
+    let users = getUsers();
+
+    if(users.some(u => u.email === email)){
+      showMsg('signupMsg', 'This email is already registered. Please login.', 'error');
+      return false;
+    }
+
+    users.push({ name, email, phone, password, createdAt: new Date().toISOString() });
+    saveUsers(users);
+
+    showMsg('signupMsg', 'Account created successfully! You can now login.', 'success');
+
+    document.getElementById('signupForm').reset();
+
+    setTimeout(() => {
+      switchTab('login');
+      document.getElementById('loginEmail').value = email;
+      showMsg('loginMsg', 'Registered! Please enter your password to login.', 'success');
+    }, 1200);
+
+    return false;
+  }
+
+  /* ---------------- Login Handler ---------------- */
+  const REDIRECT_PAGE = 'index.html'; // <-- change this if your main page has a different name/path
+
+  function handleLogin(e){
+    e.preventDefault();
+    const emailInput = document.getElementById('loginEmail').value.trim().toLowerCase();
+    const password = document.getElementById('loginPassword').value;
+    const remember = document.getElementById('rememberMe').checked;
+
+    let users = getUsers();
+    const user = users.find(u => (u.email === emailInput || u.name.toLowerCase() === emailInput) && u.password === password);
+
+    if(user){
+      showMsg('loginMsg', 'Login successful! Welcome, ' + user.name + ' 🎉', 'success');
+      window.location.href = 'index.html';
+
+      // Save/refresh "remember me" username + password so they auto-fill next visit
+      if(remember){
+        localStorage.setItem('ramanand_remember', JSON.stringify({
+          email: user.email,
+          name: user.name,
+          password: user.password
+        }));
+      } else {
+        localStorage.removeItem('ramanand_remember');
+      }
+
+      // Save the active logged-in session (username + password + login time).
+      // Your index.html can read the 'ramanand_current_user' key to know who is logged in.
+      localStorage.setItem('ramanand_current_user', JSON.stringify({
+        name: user.name,
+        email: user.email,
+        password: user.password,
+        loginAt: new Date().toISOString()
+      }));
+      localStorage.setItem('ramanand_logged_in', 'true');
+
+      // Animate the card away
+      card.style.transition = 'transform 0.6s ease, opacity 0.6s ease';
+      setTimeout(() => {
+        card.style.transform = 'rotateX(6deg) rotateY(-4deg) scale(1.05)';
+        card.style.opacity = '0';
+      }, 100);
+
+      // Show full-screen welcome overlay, then auto redirect to the main site
+      document.getElementById('redirectText').textContent = 'Welcome, ' + user.name + '!';
+      setTimeout(() => {
+        document.getElementById('redirectOverlay').classList.add('show');
+      }, 350);
+
+      setTimeout(() => {
+        window.location.href = REDIRECT_PAGE;
+      }, 1900);
+
+    } else {
+      showMsg('loginMsg', 'Invalid email or password. Please try again.', 'error');
+      card.style.animation = 'shakeCard 0.4s ease';
+      setTimeout(() => { card.style.animation = 'cardFloat 6s ease-in-out infinite'; }, 400);
+    }
+
+    return false;
+  }
+
+  /* ---------------- Forgot Password (simple demo) ---------------- */
+  function forgotPassword(){
+    const email = prompt('Enter your registered email to retrieve your password (demo only):');
+    if(!email) return;
+    const users = getUsers();
+    const user = users.find(u => u.email === email.trim().toLowerCase());
+    if(user){
+      alert('Your password is: ' + user.password + '\\n\\n(In a real app, never show passwords like this — send a secure reset link via email instead.)');
+    } else {
+      alert('No account found with that email.');
+    }
+  }
+
+  /* ---------------- Auto-fill Remembered Username + Password ---------------- */
+  window.addEventListener('DOMContentLoaded', () => {
+    const remembered = localStorage.getItem('ramanand_remember');
+    if(remembered){
+      const data = JSON.parse(remembered);
+      document.getElementById('loginEmail').value = data.email;
+      if(data.password){
+        document.getElementById('loginPassword').value = data.password;
+      }
+      document.getElementById('rememberMe').checked = true;
+      document.getElementById('savedInfo').textContent = 'Welcome back, ' + data.name + '! Your saved login has been filled in.';
+    }
+  });
+
+  /* ---------------- Card Shake Keyframes (added dynamically) ---------------- */
+  const styleSheet = document.createElement('style');
+  styleSheet.textContent = `
+    @keyframes shakeCard{
+      0%,100%{ transform:rotateX(6deg) rotateY(-4deg) translateX(0); }
+      20%{ transform:rotateX(6deg) rotateY(-4deg) translateX(-10px); }
+      40%{ transform:rotateX(6deg) rotateY(-4deg) translateX(10px); }
+      60%{ transform:rotateX(6deg) rotateY(-4deg) translateX(-6px); }
+      80%{ transform:rotateX(6deg) rotateY(-4deg) translateX(6px); }
+    }
+  `;
+  
+  document.head.appendChild(styleSheet);
+  
+</script>
+
+</body>
+
+</html>
